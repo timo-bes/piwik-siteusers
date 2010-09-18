@@ -86,23 +86,37 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 		$data = html_entity_decode($data);
 		$data = json_decode($data, true);
 		
-		if (!isset($data['SiteUsers_UserID']) || !isset($data['SiteUsers_UserName'])
-				|| !isset($data['SiteUsers_Action'])) {
+		if (!isset($data['SiteUsers_Action'])) {
 			return false;
 		}
 		
 		$action = $notification->getNotificationObject();
 		$idaction = $action->getIdActionUrl();
+		
 		$info = $notification->getNotificationInfo();
+		$idsite = $info['idSite'];
+		$idvisit = $info['idVisit'];
+		
+		include_once(dirname(__FILE__).'/Model.php');
+		include_once(dirname(dirname(dirname(__FILE__))).'/Core/Date.php');
+		$model = Piwik_SiteUsers_Model::getInstance();
+		
+		$logAction = $data['SiteUsers_Action'];
+		
+		if ($logAction == 'logout') {
+			return $model->logLogout($idvisit);
+		}
+		
+		if (!isset($data['SiteUsers_UserID']) || !isset($data['SiteUsers_UserName'])) {
+			return false;
+		}
 		
 		$iduser = $data['SiteUsers_UserID'];
 		$userName = $data['SiteUsers_UserName'];
-		$action = $data['SiteUsers_Action'];
 		
-		include_once(dirname(__FILE__).'/Archive.php');
-		include_once(dirname(__FILE__).'/Model.php');
-		include_once(dirname(dirname(dirname(__FILE__))).'/Core/Date.php');
-		Piwik_SiteUsers_Archive::log($iduser, $userName, $action, $info['idSite'], $info['idVisit']);
+		if ($logAction == 'login') {
+			$model->logLogin($iduser, $userName, $idsite, $idvisit);
+		}
 	}
 	
 }

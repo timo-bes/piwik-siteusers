@@ -35,8 +35,14 @@ class Piwik_SiteUsers_Model {
 	
 	/** Log a login */
 	public function logLogin($iduser, $userName, $idsite, $idvisit) {
-		if (!$this->userLoggedIn($iduser, $idvisit)) {
-			$this->logOutCurrentUser($idvisit);
+		if (!$iduser || !$userName) {
+			return false;
+		}
+		$loggedIn = $this->getLoggedInUser($idvisit);
+		if ($loggedIn != $iduser) {
+			if ($loggedIn) {
+				$this->logLogout($idvisit);
+			}
 			$bind = array(
 				':iduser' => $iduser,
 				':userName' => $userName,
@@ -57,28 +63,9 @@ class Piwik_SiteUsers_Model {
 		return false;
 	}
 	
-	/** Log out the current user for a visit */
-	private function logOutCurrentUser($idvisit) {
-		$bind = array(':idvisit' => $idvisit);
-		$sql = '
-			SELECT
-				iduser
-			FROM
-				'.self::loginTable().' AS login
-			WHERE
-				idvisit = :idvisit AND
-				datetime_logout = "0000-00-00 00:00:00"
-		';
-		$iduser = Piwik_FetchOne($sql, $bind);
-		if ($iduser) {
-			$this->logLogout($iduser, $idvisit);
-		}
-	}
-	
 	/** Log a logout */
-	public function logLogout($iduser, $idvisit) {
+	public function logLogout($idvisit) {
 		$bind = array(
-			':iduser' => $iduser,
 			':idvisit' => intval($idvisit),
 			':now' => self::now()
 		);
@@ -89,26 +76,21 @@ class Piwik_SiteUsers_Model {
 				datetime_logout = :now,
 				duration = TIMESTAMPDIFF(MINUTE, datetime_login, :now)
 			WHERE
-				iduser = :iduser AND
 				idvisit = :idvisit AND
 				datetime_logout = "0000-00-00 00:00:00"
 		';
 		return Piwik_Query($sql, $bind);
 	}
 	
-	/** Check whether the user is already logged in */
-	private function userLoggedIn($iduser, $idvisit) {
-		$bind = array(
-			':iduser' => $iduser,
-			':idvisit' => intval($idvisit)
-		);
+	/** Check whether a user is already logged in */
+	private function getLoggedInUser($idvisit) {
+		$bind = array(':idvisit' => intval($idvisit));
 		$sql = '
 			SELECT
-				idlogin
+				iduser
 			FROM
-				'.self::loginTable().' AS login
+				'.self::loginTable().'
 			WHERE
-				iduser = :iduser AND
 				idvisit = :idvisit AND
 				datetime_logout = "0000-00-00 00:00:00"
 		';

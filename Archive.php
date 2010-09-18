@@ -32,20 +32,6 @@ class Piwik_SiteUsers_Archive {
 		return self::$instance;
 	}
 	
-	/** Log user action */
-	public static function log($iduser, $userName, $action, $idsite, $idvisit) {
-		$model = Piwik_SiteUsers_Model::getInstance();
-		
-		switch ($action) {
-		case 'login':
-			$model->logLogin($iduser, $userName, $idsite, $idvisit);
-			break;
-		case 'logout':
-			$model->logLogout($iduser, $idvisit);
-			break;
-		}
-	}
-	
 	/** Get data table from archive
      * @return Piwik_DataTable */
     public static function getDataTable($name, $idsite, $period, $date) {

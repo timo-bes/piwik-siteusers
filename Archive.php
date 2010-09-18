@@ -46,6 +46,16 @@ class Piwik_SiteUsers_Archive {
 		}
 	}
 	
+	/** Get data table from archive
+     * @return Piwik_DataTable */
+    public static function getDataTable($name, $idsite, $period, $date) {
+    	Piwik::checkUserHasViewAccess($idsite);
+    	$name = 'SiteUsers_'.$name;
+		$archive = Piwik_Archive::build($idsite, $period, $date);
+		$dataTable = $archive->getDataTable($name);
+		return $dataTable;
+    }
+	
 	/** Build archive for a single day */
 	public static function archiveDay(Piwik_ArchiveProcessing $archive) {
 		$self = self::getInstance();

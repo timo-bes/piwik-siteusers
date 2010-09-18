@@ -24,6 +24,13 @@ class Piwik_SiteUsers_API {
 		return self::$instance;
 	}
 	
+	/** Get login statistics
+	 * @return Piwik_DataTable */
+	public function getLogins($idSite, $period, $date) {
+		return Piwik_SiteUsers_Archive::getDataTable(
+				'logins', $idSite, $period, $date);
+	}
+	
 }
 
 ?>

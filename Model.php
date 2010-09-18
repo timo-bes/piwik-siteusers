@@ -125,7 +125,7 @@ class Piwik_SiteUsers_Model {
 			SELECT
 				COUNT(DISTINCT idvisit) AS visits_with_logins,
 				COUNT(idlogin) AS total_logins,
-				username,
+				username AS label,
 				SUM(
 					CASE
 						WHEN datetime_logout != "0000-00-00 00:00:00" THEN duration

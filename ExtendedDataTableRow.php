@@ -5,8 +5,8 @@
  *
  * Author:   Timo Besenreuther
  *           EZdesign.de
- * Created:  2010-08-30
- * Modified: 2010-08-31
+ * Created:  2010-09-18
+ * Modified: 2010-09-18
  */
 
 class Piwik_SiteUsers_ExtendedDataTableRow

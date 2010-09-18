@@ -98,7 +98,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 		$idvisit = $info['idVisit'];
 		
 		include_once(dirname(__FILE__).'/Model.php');
-		include_once(dirname(dirname(dirname(__FILE__))).'/Core/Date.php');
+		include_once(dirname(dirname(dirname(__FILE__))).'/core/Date.php');
 		$model = Piwik_SiteUsers_Model::getInstance();
 		
 		$logAction = $data['SiteUsers_Action'];

@@ -63,7 +63,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
     
     /** Menu hook */
 	public function addMenu() {
-		Piwik_AddMenu('Visitors_Visitors', 'SiteUsers_Logins',
+		Piwik_AddMenu('General_Visitors', 'SiteUsers_Logins',
 				array('module' => 'SiteUsers', 'action' => 'logins'));
 	}
 	
@@ -98,6 +98,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 		
 		include_once(dirname(__FILE__).'/Archive.php');
 		include_once(dirname(__FILE__).'/Model.php');
+		include_once(dirname(dirname(dirname(__FILE__))).'/Core/Date.php');
 		Piwik_SiteUsers_Archive::log($user, $action, $info['idSite'], $info['idVisit']);
 	}
 	

@@ -17,7 +17,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 			'description' => Piwik_Translate('SiteUsers_PluginDescription'),
 			'author' => 'Timo Besenreuther, EZdesign',
 			'author_homepage' => 'http://www.ezdesign.de/',
-			'version' => '0.0.1',
+			'version' => '0.0.2',
 			'translationAvailable' => true,
 			'TrackerPlugin' => true
 		);

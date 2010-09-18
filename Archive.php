@@ -12,14 +12,18 @@
 
 class Piwik_SiteUsers_Archive {
 	
-	private static $instance;
-	/** Get singleton instance
-	 * @return Piwik_SiteUsers_Archive */
-	public static function getInstance() {
-		if (self::$instance == null) {
-			self::$instance = new self;
+	/** Log user action */
+	public static function log($userName, $action, $idsite, $idvisit) {
+		$model = Piwik_SiteUsers_Model::getInstance();
+		
+		switch ($action) {
+		case 'login':
+			$model->logLogin($userName, $idsite, $idvisit);
+			break;
+		case 'logout':
+			$model->logLogout($userName, $idvisit);
+			break;
 		}
-		return self::$instance;
 	}
 	
 	/** Build archive for a single day */

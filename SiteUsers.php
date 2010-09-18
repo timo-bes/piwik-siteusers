@@ -27,14 +27,15 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 	public function install() {
 		try {
 			Zend_Registry::get('db')->query('
-				CREATE TABLE `piwik_log_siteusers_logins` (
+				CREATE TABLE `'.Piwik_SiteUsers_Model::loginTable().'` (
 					`idlogin` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 					`idsite` INT NOT NULL,
 					`idvisit` INT NOT NULL,
 					`username` VARCHAR(255) NOT NULL,
 					`duration` SMALLINT(5) NOT NULL,
 					`date` DATE NOT NULL,
-					`datetime` DATETIME NOT NULL
+					`datetime_login` DATETIME NOT NULL,
+					`datetime_logout` DATETIME NOT NULL
 				) ENGINE = MYISAM
 			');
 		} catch (Exception $e) {}
@@ -44,7 +45,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 	public function uninstall() {
 		try {
 			Zend_Registry::get('db')->query('
-				DROP TABLE `piwik_log_siteusers_logins`;
+				DROP TABLE `'.Piwik_SiteUsers_Model::loginTable().'`;
 			');
 		} catch (Exception $e) {}
 	}
@@ -80,11 +81,24 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 	
 	/** Logger hook */
 	public function log($notification) {
-		$action = $notification->getNotificationObject();
-		
 		$data = Piwik_Common::getRequestVar('data', '');
 		$data = html_entity_decode($data);
 		$data = json_decode($data, true);
+		
+		if (!isset($data['SiteUsers_User']) || !isset($data['SiteUsers_Action'])) {
+			return false;
+		}
+		
+		$action = $notification->getNotificationObject();
+		$idaction = $action->getIdActionUrl();
+		$info = $notification->getNotificationInfo();
+		
+		$user = $data['SiteUsers_User'];
+		$action = $data['SiteUsers_Action'];
+		
+		include_once(dirname(__FILE__).'/Archive.php');
+		include_once(dirname(__FILE__).'/Model.php');
+		Piwik_SiteUsers_Archive::log($user, $action, $info['idSite'], $info['idVisit']);
 	}
 	
 }

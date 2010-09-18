@@ -25,15 +25,28 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 	
 	/** Install the plugin */
 	public function install() {
-		$query = '';
 		try {
-			Zend_Registry::get('db')->query($query);
+			Zend_Registry::get('db')->query('
+				CREATE TABLE `piwik_log_siteusers_logins` (
+					`idlogin` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+					`idsite` INT NOT NULL,
+					`idvisit` INT NOT NULL,
+					`username` VARCHAR(255) NOT NULL,
+					`duration` SMALLINT(5) NOT NULL,
+					`date` DATE NOT NULL,
+					`datetime` DATETIME NOT NULL
+				) ENGINE = MYISAM
+			');
 		} catch (Exception $e) {}
 	}
 	
 	/** Uninstall the plugin */
 	public function uninstall() {
-		
+		try {
+			Zend_Registry::get('db')->query('
+				DROP TABLE `piwik_log_siteusers_logins`;
+			');
+		} catch (Exception $e) {}
 	}
 	
 	/** Register Hooks */

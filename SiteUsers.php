@@ -31,6 +31,7 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 					`idlogin` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 					`idsite` INT NOT NULL,
 					`idvisit` INT NOT NULL,
+					`iduser` VARCHAR(64) NOT NULL,
 					`username` VARCHAR(255) NOT NULL,
 					`duration` SMALLINT(5) NOT NULL,
 					`date` DATE NOT NULL,
@@ -85,7 +86,8 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 		$data = html_entity_decode($data);
 		$data = json_decode($data, true);
 		
-		if (!isset($data['SiteUsers_User']) || !isset($data['SiteUsers_Action'])) {
+		if (!isset($data['SiteUsers_UserID']) || !isset($data['SiteUsers_UserName'])
+				|| !isset($data['SiteUsers_Action'])) {
 			return false;
 		}
 		
@@ -93,13 +95,14 @@ class Piwik_SiteUsers extends Piwik_Plugin {
 		$idaction = $action->getIdActionUrl();
 		$info = $notification->getNotificationInfo();
 		
-		$user = $data['SiteUsers_User'];
+		$iduser = $data['SiteUsers_UserID'];
+		$userName = $data['SiteUsers_UserName'];
 		$action = $data['SiteUsers_Action'];
 		
 		include_once(dirname(__FILE__).'/Archive.php');
 		include_once(dirname(__FILE__).'/Model.php');
 		include_once(dirname(dirname(dirname(__FILE__))).'/Core/Date.php');
-		Piwik_SiteUsers_Archive::log($user, $action, $info['idSite'], $info['idVisit']);
+		Piwik_SiteUsers_Archive::log($iduser, $userName, $action, $info['idSite'], $info['idVisit']);
 	}
 	
 }

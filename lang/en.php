@@ -15,7 +15,8 @@ $translations = array(
 	'SiteUsers_SiteUsers' => 'Site Users',
 	'SiteUsers_Logins' => 'Logins',
 	
-	'SiteUsers_Col_label' => 'Username',
+	'SiteUsers_Col_username' => 'Username',
+	'SiteUsers_Col_iduser' => 'User ID',
 	'SiteUsers_Col_total_logins' => 'Logins',
 	'SiteUsers_Col_visits_with_logins' => 'Visits with Logins',
 	'SiteUsers_Col_duration' => 'Logged in for (min)'

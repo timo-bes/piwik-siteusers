@@ -25,7 +25,8 @@ class Piwik_SiteUsers_Controller extends Piwik_Controller {
 		$view->init($this->pluginName,  __FUNCTION__, 'SiteUsers.getLogins');
 		
 		$columns = array(
-			'label',
+			'username',
+			'iduser',
 			'total_logins',
 			'visits_with_logins',
 			'duration'
@@ -39,7 +40,7 @@ class Piwik_SiteUsers_Controller extends Piwik_Controller {
     	$view->setColumnsToDisplay($columns);
 		
 		$view->setSortedColumn('total_logins', 'desc');
-		$view->disableFooterIcons();
+		$view->disableFooter();
 		
 		$result = $this->renderView($view, true);
 		if ($return) return $result;

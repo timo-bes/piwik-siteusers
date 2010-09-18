@@ -34,10 +34,11 @@ class Piwik_SiteUsers_Model {
 	}
 	
 	/** Log a login */
-	public function logLogin($userName, $idsite, $idvisit) {
-		if (!$this->userLoggedIn($userName, $idvisit)) {
+	public function logLogin($iduser, $userName, $idsite, $idvisit) {
+		if (!$this->userLoggedIn($iduser, $idvisit)) {
 			$this->logOutCurrentUser($idvisit);
 			$bind = array(
+				':iduser' => $iduser,
 				':userName' => $userName,
 				':idsite' => intval($idsite),
 				':idvisit' => intval($idvisit),
@@ -46,9 +47,9 @@ class Piwik_SiteUsers_Model {
 			$sql = '
 				INSERT INTO
 					'.self::loginTable().'
-					(idsite, idvisit, username, duration, date, datetime_login)
+					(idsite, idvisit, iduser, username, duration, date, datetime_login)
 				VALUES
-					(:idsite, :idvisit, :userName, 0, :now, :now)
+					(:idsite, :idvisit, :iduser, :userName, 0, :now, :now)
 			';
 			Piwik_Query($sql, $bind);
 			return true;
@@ -61,23 +62,23 @@ class Piwik_SiteUsers_Model {
 		$bind = array(':idvisit' => $idvisit);
 		$sql = '
 			SELECT
-				username
+				iduser
 			FROM
 				'.self::loginTable().' AS login
 			WHERE
 				idvisit = :idvisit AND
 				datetime_logout = "0000-00-00 00:00:00"
 		';
-		$username = Piwik_FetchOne($sql, $bind);
-		if ($username) {
-			$this->logLogout($username, $idvisit);
+		$iduser = Piwik_FetchOne($sql, $bind);
+		if ($iduser) {
+			$this->logLogout($iduser, $idvisit);
 		}
 	}
 	
 	/** Log a logout */
-	public function logLogout($userName, $idvisit) {
+	public function logLogout($iduser, $idvisit) {
 		$bind = array(
-			':userName' => $userName,
+			':iduser' => $iduser,
 			':idvisit' => intval($idvisit),
 			':now' => self::now()
 		);
@@ -88,7 +89,7 @@ class Piwik_SiteUsers_Model {
 				datetime_logout = :now,
 				duration = TIMESTAMPDIFF(MINUTE, datetime_login, :now)
 			WHERE
-				username = :userName AND
+				iduser = :iduser AND
 				idvisit = :idvisit AND
 				datetime_logout = "0000-00-00 00:00:00"
 		';
@@ -96,9 +97,9 @@ class Piwik_SiteUsers_Model {
 	}
 	
 	/** Check whether the user is already logged in */
-	private function userLoggedIn($userName, $idvisit) {
+	private function userLoggedIn($iduser, $idvisit) {
 		$bind = array(
-			':userName' => $userName,
+			':iduser' => $iduser,
 			':idvisit' => intval($idvisit)
 		);
 		$sql = '
@@ -107,7 +108,7 @@ class Piwik_SiteUsers_Model {
 			FROM
 				'.self::loginTable().' AS login
 			WHERE
-				username = :userName AND
+				iduser = :iduser AND
 				idvisit = :idvisit AND
 				datetime_logout = "0000-00-00 00:00:00"
 		';
@@ -125,7 +126,9 @@ class Piwik_SiteUsers_Model {
 			SELECT
 				COUNT(DISTINCT idvisit) AS visits_with_logins,
 				COUNT(idlogin) AS total_logins,
-				username AS label,
+				iduser AS label,
+				iduser AS iduser,
+				username AS username,
 				SUM(
 					CASE
 						WHEN datetime_logout != "0000-00-00 00:00:00" THEN duration
@@ -147,7 +150,7 @@ class Piwik_SiteUsers_Model {
 				datetime_login > :startDate AND
 				datetime_login < :endDate
 			GROUP BY
-				username
+				iduser
 		';
 		return $data = Piwik_FetchAll($sql, $bind);
 	}

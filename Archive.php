@@ -33,15 +33,15 @@ class Piwik_SiteUsers_Archive {
 	}
 	
 	/** Log user action */
-	public static function log($userName, $action, $idsite, $idvisit) {
+	public static function log($iduser, $userName, $action, $idsite, $idvisit) {
 		$model = Piwik_SiteUsers_Model::getInstance();
 		
 		switch ($action) {
 		case 'login':
-			$model->logLogin($userName, $idsite, $idvisit);
+			$model->logLogin($iduser, $userName, $idsite, $idvisit);
 			break;
 		case 'logout':
-			$model->logLogout($userName, $idvisit);
+			$model->logLogout($iduser, $idvisit);
 			break;
 		}
 	}
@@ -70,7 +70,7 @@ class Piwik_SiteUsers_Archive {
 	private function archiveDataArray($keyword, &$data) {
 		$dataTable = new Piwik_DataTable();
 		foreach ($data as &$row) {
-			$dataTable->addRow(new Piwik_DataTable_Row(
+			$dataTable->addRow(new Piwik_SiteUsers_ExtendedDataTableRow(
 				array(Piwik_DataTable_Row::COLUMNS => $row))
 			);
 		}
